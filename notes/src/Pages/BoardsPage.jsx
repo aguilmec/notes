@@ -16,6 +16,7 @@ export default function BoardsPage(){
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [message, setMessage] = useState('');
 
   useEffect(()=>{
 
@@ -34,6 +35,7 @@ export default function BoardsPage(){
           };
         }));
       }catch(error){
+        setMessage('There has been an error fetching the data, please try again.')
         setError(true);
         setLoading(false);
         setTimeout(()=>{
@@ -99,6 +101,7 @@ export default function BoardsPage(){
       });
       setBoards([...boards, { name: name, listItems: [], starred: false}]);
     }catch(error){
+      setMessage('There has been an error while performing this operation, please try again.')
       setError(true);
       setTimeout(()=>{
         setError(false);
@@ -116,7 +119,7 @@ export default function BoardsPage(){
         <div className="mt-[30px] ml-auto mr-[25px]">
                 <button onClick={()=>{setShowModal(true)}} className="px-[25px] text-slate-200 bg-emerald-400 py-[10px] shadow-sm">Add new board</button>
         </div>
-        {error && <Toast />}
+        {error && <Toast message={message} />}
     </div>
   );
 };

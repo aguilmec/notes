@@ -13,31 +13,38 @@ export default function NoteList({ list }){
 
     const [items, setItems] = useState(Object.values(list)[0]);
     const [isOpen, setIsOpen] = useState(false);
+    const [error, setError] = useState(false);
+    const [message, setMessage] = useState('');
 
     async function handleNewItem(item){
-        const nextState = [...items, item];
-        setItems(nextState);
-        const docRef = doc(db, 'boards', id);
-        const snapshot = await getDoc(docRef);
-        const newListItems = snapshot.data().listItems;
-        let newItem = {};
-        const key = Object.keys(list)[0];
-        let i;
-        newItem[key] = nextState
-        newListItems.forEach((item, index)=>{
-            if(Object.keys(item)[0] === key){
-                i = index
-            }
-        });
-        newListItems[i] = newItem;
-        await updateDoc(docRef, {
-            listItems: newListItems
-        });
-       
+        try{
+            const nextState = [...items, item];
+            setItems(nextState);
+            const docRef = doc(db, 'boards', id);
+            const snapshot = await getDoc(docRef);
+            const newListItems = snapshot.data().listItems;
+            let newItem = {};
+            const key = Object.keys(list)[0];
+            let i;
+            newItem[key] = nextState
+            newListItems.forEach((item, index)=>{
+                if(Object.keys(item)[0] === key){
+                    i = index
+                }
+            });
+            newListItems[i] = newItem;
+            await updateDoc(docRef, {
+                listItems: newListItems
+            });
+        }catch{
+            setMessage('There has been an error while performing this operation. Please try again.');
+            setError(true);
+            setTimeout(()=>{
+                setError(false);
+            },5000)
+        };
         
-        await updateDoc(docRef, {
-            
-        });
+       
     };
 
     function handleClose(){
