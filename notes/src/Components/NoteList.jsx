@@ -43,8 +43,6 @@ export default function NoteList({ list }){
                 setError(false);
             },5000)
         };
-        
-       
     };
 
     function handleClose(){

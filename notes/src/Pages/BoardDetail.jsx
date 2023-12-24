@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Toast from "../Components/Toast";
 import Board from "../Components/Board";
 import { useParams } from "react-router-dom";
-import { getFirestore, collection, query, where, getDocs, getDoc, doc } from 'firebase/firestore/lite';
+import { getFirestore, getDoc, doc } from 'firebase/firestore/lite';
 
 
 export default function(){

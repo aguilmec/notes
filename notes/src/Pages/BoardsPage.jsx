@@ -4,7 +4,7 @@ import app from '../firebase.js';
 import Boards from '../Components/Boards';
 import StarredBoards from '../Components/StarredBoards';
 import NewBoardModal from '../Components/NewBoardModal';
-import { getFirestore, collection, getDocs, doc, addDoc } from 'firebase/firestore/lite';
+import { getFirestore, collection, getDocs, doc, addDoc, updateDoc } from 'firebase/firestore/lite';
 import Toast from '../Components/Toast.jsx';
 
 export default function BoardsPage(){
@@ -17,6 +17,32 @@ export default function BoardsPage(){
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [message, setMessage] = useState('');
+
+  function handleEdit(id, name, comment){
+
+    try{
+      const docRef = doc(db, 'boards', id);
+      updateDoc(docRef, {
+        name: name,
+        comment: comment
+      });
+      setBoards((prevBoards) => {
+        return prevBoards.map((board) => {
+          if(board.id === id){
+            return { ...board, name: name, comment: comment };
+          }else{
+            return board;
+          }
+        });
+      });
+    }catch{
+      setMessage('There has been an error updating this board. Please try again');
+      setError(true);
+      setTimeout(()=>{
+        setError(false);
+      },5000);
+    };
+  };
 
   useEffect(()=>{
 
@@ -50,41 +76,61 @@ export default function BoardsPage(){
 
   function handleStarred(id, name, starred, listItems){
 
-    //update the starred value in the backend.
-
-    if(!starred){
-      setStarredBoards([...starredBoards, {id: id, name: name, starred: starred, listItems: listItems}]);
-      setBoards((prevBoards) => {
-        return prevBoards.map((board) => {
-          if(board.id === id){
-            return { ...board, starred: true };
-          }else{
-            return board;
-          }
-        });
+    try{
+      const docRef = doc(db, 'boards', id);
+      updateDoc(docRef, {
+        starred: true
       });
+      if(!starred){
+        setStarredBoards([...starredBoards, {id: id, name: name, starred: starred, listItems: listItems}]);
+        setBoards((prevBoards) => {
+          return prevBoards.map((board) => {
+            if(board.id === id){
+              return { ...board, starred: true };
+            }else{
+              return board;
+            }
+          });
+        });
+      };
+    }catch{
+      setMessage('There has been an error updating this board. Please try again');
+      setError(true);
+      setTimeout(()=>{
+        setError(false);
+      },5000);
     };
   };
 
   function handleUnstar(id){
 
-    //update the starred value in the backend.
-
-    setStarredBoards(starredBoards.filter((board)=>{
-      if(board.id === id){
-        return false;
-      };
-      return true;
-    }));
-    setBoards((prevBoards) => {
-      return prevBoards.map((board) => {
-        if(board.id === id){
-          return { ...board, starred: false };
-        }else{
-          return board;
-        }
+    try{
+      const docRef = doc(db, 'boards', id);
+      updateDoc(docRef, {
+        starred: false
       });
-    });
+      setStarredBoards(starredBoards.filter((board)=>{
+        if(board.id === id){
+          return false;
+        };
+        return true;
+      }));
+      setBoards((prevBoards) => {
+        return prevBoards.map((board) => {
+          if(board.id === id){
+            return { ...board, starred: false };
+          }else{
+            return board;
+          };
+        });
+      });
+    }catch{
+      setMessage('There has been an error updating this board. Please try again');
+      setError(true);
+      setTimeout(()=>{
+        setError(false);
+      },5000);
+    };    
   };
 
   function handleHideModal(){
@@ -112,8 +158,8 @@ export default function BoardsPage(){
 
   return (
     <div className="App flex flex-col">
-        <StarredBoards starredBoards={starredBoards} handleUnstar={handleUnstar} />
-        <Boards boardList={boards} handleUnstar={handleUnstar} handleStarred={handleStarred} />
+        <StarredBoards handleEdit={handleEdit} starredBoards={starredBoards} handleUnstar={handleUnstar} />
+        <Boards boardList={boards} handleEdit={handleEdit} handleUnstar={handleUnstar} handleStarred={handleStarred} />
         {loading && <p className='text-slate-300 tracking-wide text-[18px] font-semibold'>Loading...</p>}
         {showModal && <NewBoardModal handleNewBoard={handleNewBoard} handleHideModal={handleHideModal} />}
         <div className="mt-[30px] ml-auto mr-[25px]">
