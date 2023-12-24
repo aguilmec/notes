@@ -1,9 +1,14 @@
 import BoardPreview from "./BoardPreview";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Boards({ boardList, handleStarred, handleUnstar }){
 
     const [hiddenBoards, setHiddenBoards] = useState(true);
+    const [boards, setBoards] = useState(boardList)
+    
+    useEffect(()=>{
+        setBoards(boardList);
+    },[boardList]);
 
     return(
         <div className="w-fullflex flex-col text-slate-300">
@@ -14,15 +19,10 @@ export default function Boards({ boardList, handleStarred, handleUnstar }){
             {
                 hiddenBoards && (
                     <div className="grid grid-cols-3 gap-[20px] px-[25px] mt-[25px]">
-                        {boardList.map((board)=>{
-                            if(board.listItems.length === 0){
-                                return null;
-                            }else{
-                                return(
-                                    <BoardPreview key={board.id} handleUnstar={handleUnstar} handleStarred={handleStarred} starred={board.starred} name={board.name} id={board.id} listItems={board.listItems} />
-                                );
-                            }
-                            
+                        {boards.map((board)=>{                          
+                            return(
+                                <BoardPreview key={board.id} handleUnstar={handleUnstar} handleStarred={handleStarred} starred={board.starred} name={board.name} id={board.id} listItems={board.listItems} />
+                            );
                         })}
                     </div>
                 )

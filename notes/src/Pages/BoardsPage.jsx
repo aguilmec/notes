@@ -4,7 +4,7 @@ import app from '../firebase.js';
 import Boards from '../Components/Boards';
 import StarredBoards from '../Components/StarredBoards';
 import NewBoardModal from '../Components/NewBoardModal';
-import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+import { getFirestore, collection, getDocs, doc, addDoc } from 'firebase/firestore/lite';
 
 export default function BoardsPage(){
 
@@ -20,10 +20,10 @@ export default function BoardsPage(){
       const colRef = collection(db, 'boards');
       const docs = await getDocs(colRef);
       const data = docs.docs.map((doc)=>{
-        return doc.data();
+        return {...doc.data(), id: doc.id};
       });
       
-      console.log(data);
+      
 
       setBoards(data);  
       setStarredBoards(data.filter((board)=>{
@@ -80,11 +80,15 @@ export default function BoardsPage(){
     setShowModal(false);
   };
 
-  function handleNewBoard(name){
-
-    //save the new board in the backend
-
-    setBoards([...boards, {id: 10, name: name, listItems: [], starred: false}]);
+  async function handleNewBoard(name, comment){
+    await addDoc(collection(db, 'boards',),{
+      name: name,
+      starred: false,
+      listItems: [],
+      comment: comment
+    });
+    console.log('Board has been added')
+    setBoards([...boards, { name: name, listItems: [], starred: false}]);
   };
 
   return (

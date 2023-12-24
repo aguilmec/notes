@@ -2,8 +2,7 @@ import app from "../firebase";
 import { useEffect, useState } from "react";
 import Board from "../Components/Board";
 import { useParams } from "react-router-dom";
-import { getFirestore, collection, query, where, getDocs, getDoc } from 'firebase/firestore/lite';
-import NewItemModal from "../Components/NewItemModal";
+import { getFirestore, collection, query, where, getDocs, getDoc, doc } from 'firebase/firestore/lite';
 
 
 export default function(){
@@ -15,13 +14,10 @@ export default function(){
 
     useEffect(()=>{
         async function getData(){
-            const q = query(collection(db, 'boards'), where('id','==', parseInt(id) ));
-            const querySnapshot = await getDocs(q);
-            let data = []
-            querySnapshot.forEach((doc)=>{
-                data.push(doc.data());
-            });   
-            setBoard(data[0]);
+            const docRef = doc(db, 'boards', id);
+            const docSnapshot = await getDoc(docRef);
+           
+            setBoard(docSnapshot.data());
         };    
         getData();
     },[]);

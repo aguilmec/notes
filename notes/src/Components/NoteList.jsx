@@ -2,14 +2,42 @@ import { PiGearBold } from "react-icons/pi";
 import ListItem from "./ListItem";
 import { useState } from "react";
 import NewItemModal from "./NewItemModal";
+import app from '../firebase.js';
+import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore/lite';
+import { useParams } from "react-router-dom";
 
 export default function NoteList({ list }){
+
+    const db = getFirestore(app);
+    const { id } = useParams();
 
     const [items, setItems] = useState(Object.values(list)[0]);
     const [isOpen, setIsOpen] = useState(false);
 
-    function handleNewItem(item){
-        setItems([...items, item]);
+    async function handleNewItem(item){
+        const nextState = [...items, item];
+        setItems(nextState);
+        const docRef = doc(db, 'boards', id);
+        const snapshot = await getDoc(docRef);
+        const newListItems = snapshot.data().listItems;
+        let newItem = {};
+        const key = Object.keys(list)[0];
+        let i;
+        newItem[key] = nextState
+        newListItems.forEach((item, index)=>{
+            if(Object.keys(item)[0] === key){
+                i = index
+            }
+        });
+        newListItems[i] = newItem;
+        await updateDoc(docRef, {
+            listItems: newListItems
+        });
+       
+        
+        await updateDoc(docRef, {
+            
+        });
     };
 
     function handleClose(){
@@ -22,9 +50,9 @@ export default function NoteList({ list }){
                 <p className="my-auto cursor-default tracking-wide">{Object.keys(list)[0]}</p>
                 <button className="my-auto"><PiGearBold /></button>
             </div>
-            <div className="flex flex-col gap-y-[10px] mb-[20px]">
-                {items.map((item)=>{
-                    return <ListItem item={item} />
+            <div className="flex flex-col gap-y-[10px] mb-[20px] overflow-auto h-[325px]">
+                {items.map((item, index)=>{
+                    return <ListItem key={index} item={item} />
                 })}
             </div>
             {isOpen && <NewItemModal handleNewItem={handleNewItem} handleClose={handleClose} />}
