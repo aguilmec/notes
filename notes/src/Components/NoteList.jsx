@@ -15,6 +15,42 @@ export default function NoteList({ list }){
     const [isOpen, setIsOpen] = useState(false);
     const [error, setError] = useState(false);
     const [message, setMessage] = useState('');
+    const [showEdit, setShowEdit] = useState(false);
+
+    async function handleDelete(name){
+        try{
+            const newItems = items.filter((item)=>{
+                if(item === name){
+                    return false;
+                }else{
+                    return true;
+                };
+            });
+            const docRef = doc(db, 'boards', id);
+            const snapshot = await getDoc(docRef);
+            const newListItems = snapshot.data().listItems;
+            let newItem = {};
+            const key = Object.keys(list)[0];
+            let i;
+            newItem[key] = newItems;
+            newListItems.forEach((item, index)=>{
+                if(Object.keys(item)[0] === key){
+                    i = index
+                }
+            });
+            newListItems[i] = newItem;
+            await updateDoc(docRef, {
+                listItems: newListItems
+            });
+            setItems(newItems);
+        }catch{
+            setMessage('There has been an error while performing this operation. Please try again.');
+            setError(true);
+            setTimeout(()=>{
+                setError(false);
+            },5000)
+        }
+    };
 
     async function handleNewItem(item){
         try{
@@ -53,11 +89,11 @@ export default function NoteList({ list }){
         <div className="rounded-sm flex bg-slate-300 flex-col px-[15px] py-[20px] relative min-h-[450px]">
             <div className="flex place-content-between text-xl mb-[10px]">
                 <p className="my-auto cursor-default tracking-wide">{Object.keys(list)[0]}</p>
-                <button className="my-auto"><PiGearBold /></button>
+                <button onClick={()=>{setShowEdit(!showEdit)}} className="my-auto"><PiGearBold /></button>
             </div>
             <div className="flex flex-col gap-y-[10px] mb-[20px] overflow-auto h-[325px]">
                 {items.map((item, index)=>{
-                    return <ListItem key={index} item={item} />
+                    return <ListItem key={index} handleDelete={handleDelete} item={item} showEdit={showEdit} />
                 })}
             </div>
             {isOpen && <NewItemModal handleNewItem={handleNewItem} handleClose={handleClose} />}
