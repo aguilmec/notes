@@ -10,21 +10,23 @@ export default function(){
     const { id } = useParams();
     const db = getFirestore(app);
     const [board, setBoard] = useState([]);
-    const [isOpen, setIsOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState();
 
     useEffect(()=>{
         async function getData(){
             const docRef = doc(db, 'boards', id);
             const docSnapshot = await getDoc(docRef);
-           
             setBoard(docSnapshot.data());
+            setLoading(false);
         };    
         getData();
     },[]);
 
     return(
         <div className="w-screen relative h-full">
-            {board && <Board board={board} />}
+            {loading && <p className='mt-[300px] text-slate-300 tracking-wide text-[18px] font-semibold'>Loading</p>}
+            {!loading && board && <Board board={board} />}
         </div>
     );
 };
