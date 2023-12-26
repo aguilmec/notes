@@ -1,7 +1,11 @@
-import { IoMenu, IoSearch } from "react-icons/io5";
-import { CgProfile } from "react-icons/cg";
+import { IoMenu, IoSearch, IoLogOutOutline } from "react-icons/io5";
+import { useAuth } from "../Context/authContext";
 
 export default function Navbar({children}){
+
+    const { user, logout } = useAuth();
+    console.log(user);
+
     return(
         <div className="flex w-screen flex-col">
             <div className="px-[20px] flex w-full h-[50px] bg-slate-900 justify-between">
@@ -20,8 +24,8 @@ export default function Navbar({children}){
                     Do
                 </div>
                 <div className="text-slate-200 my-auto my-auto">
-                    <button className="text-slate-200 text-2xl">
-                        <CgProfile />
+                    <button onClick={()=>{logout()}} className="text-slate-200 text-2xl">
+                        <IoLogOutOutline />
                     </button>
                 </div>
                 

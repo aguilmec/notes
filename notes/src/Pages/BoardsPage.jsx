@@ -12,8 +12,8 @@ import { useAuth } from '../Context/authContext.jsx';
 export default function BoardsPage(){
 
   const { user, logout } = useAuth();
-  console.log(user)
-
+  //console.log(user);
+  
   const db = getFirestore(app);
 
   const [boards, setBoards] = useState([]);

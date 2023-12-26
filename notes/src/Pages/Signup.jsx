@@ -48,5 +48,4 @@ export default function Signup(){
             {error && <Toast message={message} />}
         </div>
     );
-
 };
