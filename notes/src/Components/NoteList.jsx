@@ -2,7 +2,7 @@ import { PiGearBold } from "react-icons/pi";
 import ListItem from "./ListItem";
 import { useState } from "react";
 import NewItemModal from "./NewItemModal";
-import app from '../firebase.js';
+import {app} from '../firebase.js';
 import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore/lite';
 import { useParams } from "react-router-dom";
 

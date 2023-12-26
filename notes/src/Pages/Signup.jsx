@@ -1,19 +1,20 @@
 import { useState } from "react";
-import app from "../firebase.js";
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import Toast from "../Components/Toast.jsx";
+import { useAuth } from "../Context/authContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup(){
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [user, setUser] = useState(null);
     const [error, setError] = useState(false);
     const [message, setMessage] = useState('');
+    const { signup } = useAuth();
+    const navigate = useNavigate();
 
-    async function signup(){
+    async function callSignup(){
         try{
-            const auth = getAuth(app);
-            const response = await createUserWithEmailAndPassword(auth, email, password);
+            await signup(user);
+            navigate('/')
         }catch(error){
             if(error.code === 'auth/invalid-email'){
                 setMessage('Error: please enter a valid email.');
@@ -34,15 +35,15 @@ export default function Signup(){
             <p className="cursor-default text-slate-300 text-[22px] font-semibold tracking-wide">Signup</p>
             <div className="flex flex-col gap-y-[15px]">
                 <p className="cursor-default text-slate-300">Email:</p>
-                <input value={email} onChange={(e)=>{setEmail(e.target.value)}} className="pl-[8px] py-[2px]" placeholder="username..."></input>
+                <input onChange={(e)=>{setUser({...user, email:  e.target.value})}} className="pl-[8px] py-[2px]" placeholder="username..."></input>
             </div>
             <div className="flex flex-col gap-y-[15px]">
                 <p className="cursor-default text-slate-300">Password:</p>
-                <input value={password} onChange={(e)=>{setPassword(e.target.value)}} className="pl-[8px] py-[2px]" placeholder="password..."></input>
+                <input type="password" onChange={(e)=>{setUser({...user, password: e.target.value})}} className="pl-[8px] py-[2px]" placeholder="password..."></input>
             </div>
             <div className="flex flex-col gap-y-[15px]">
-                <button onClick={()=>{signup()}} className="mx-auto px-[20px] bg-green-500 hover:bg-green-600 text-white px-[25px] py-[5px] w-fit">Login</button>
-                <a className="cursor-pointer hover:text-slate-400 text-slate-500">Don't have an account? Click here to register.</a>
+                <button onClick={()=>{callSignup()}} className="mx-auto px-[20px] bg-green-500 hover:bg-green-600 text-white px-[25px] py-[5px] w-fit">Signup</button>
+                <a className="cursor-pointer hover:text-slate-400 text-slate-500"><button onClick={()=>{navigate('/login')}}>Already have an account? Click here to login.</button></a>
             </div>
             {error && <Toast message={message} />}
         </div>

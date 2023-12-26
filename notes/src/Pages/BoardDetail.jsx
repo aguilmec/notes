@@ -1,4 +1,4 @@
-import app from "../firebase";
+import {app} from "../firebase";
 import { useEffect, useState } from "react";
 import Toast from "../Components/Toast";
 import Board from "../Components/Board";

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import NoteList from "./NoteList";
 import NewListModal from "./NewListModal";
-import app from "../firebase";
+import {app} from "../firebase";
 import { getFirestore, doc, updateDoc } from "firebase/firestore/lite";
 import { useParams } from "react-router-dom";
 import Toast from './Toast.jsx'

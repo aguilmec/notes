@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import { useEffect } from 'react';
-import app from '../firebase.js';
+import {app} from '../firebase.js';
 import Boards from '../Components/Boards';
 import StarredBoards from '../Components/StarredBoards';
 import NewBoardModal from '../Components/NewBoardModal';
 import { getFirestore, collection, getDocs, doc, addDoc, updateDoc } from 'firebase/firestore/lite';
 import Toast from '../Components/Toast.jsx';
+import { useAuth } from '../Context/authContext.jsx';
+
 
 export default function BoardsPage(){
+
+  const { user, logout } = useAuth();
+  console.log(user)
 
   const db = getFirestore(app);
 
