@@ -4,17 +4,20 @@ import {app} from '../firebase.js';
 import Boards from '../Components/Boards';
 import StarredBoards from '../Components/StarredBoards';
 import NewBoardModal from '../Components/NewBoardModal';
-import { getFirestore, collection, getDocs, doc, addDoc, updateDoc } from 'firebase/firestore/lite';
+import { getFirestore, collection, getDocs, doc, addDoc, updateDoc, query, where } from 'firebase/firestore/lite';
 import Toast from '../Components/Toast.jsx';
-import { useAuth } from '../Context/authContext.jsx';
+import { useUserAuth } from '../Context/authContext.jsx';
 
 
 export default function BoardsPage(){
 
-  const { user, logout } = useAuth();
   //console.log(user);
   
   const db = getFirestore(app);
+
+  const { user } = useUserAuth();
+  console.log(user)
+
 
   const [boards, setBoards] = useState([]);
   const [starredBoards, setStarredBoards] = useState([]);
@@ -52,12 +55,20 @@ export default function BoardsPage(){
   useEffect(()=>{
 
     async function getData(){
+      
+      
       try{
         const colRef = collection(db, 'boards');
         const docs = await getDocs(colRef);
         const data = docs.docs.map((doc)=>{
           return {...doc.data(), id: doc.id};
         });
+        /*const colRef = collection(db, 'boards');
+        const q = query(colRef, where('userId', '==',user.uid));
+        const snapshot = await getDocs(q);
+        const data = snapshot.docs.map((doc)=>{
+          return {...doc.data(), id: doc.id};
+        });*/
         setLoading(false);
         setBoards(data);  
         setStarredBoards(data.filter((board)=>{

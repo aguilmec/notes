@@ -1,10 +1,9 @@
 import { IoMenu, IoSearch, IoLogOutOutline } from "react-icons/io5";
-import { useAuth } from "../Context/authContext";
+import { useUserAuth } from "../Context/authContext";
 
 export default function Navbar({children}){
 
-    const { user, logout } = useAuth();
-    console.log(user);
+    const { logout } = useUserAuth();
 
     return(
         <div className="flex w-screen flex-col">

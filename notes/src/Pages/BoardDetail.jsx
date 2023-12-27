@@ -5,8 +5,7 @@ import Board from "../Components/Board";
 import { useParams } from "react-router-dom";
 import { getFirestore, getDoc, doc } from 'firebase/firestore/lite';
 
-
-export default function(){
+export default function BoardDetail(){
 
     const { id } = useParams();
     const db = getFirestore(app);

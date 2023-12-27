@@ -1,20 +1,21 @@
 import { useState } from "react";
 import Toast from "../Components/Toast.jsx";
-import { useAuth } from "../Context/authContext.jsx";
 import { useNavigate } from "react-router-dom";
+import { useUserAuth } from "../Context/authContext.jsx";
 
 export default function Login(){
+
+    const { signIn } = useUserAuth();
 
     const [user, setUser] = useState(null);
     const [error, setError] = useState(false);
     const [message, setMessage] = useState('');
-    const { login } = useAuth();
     const navigate = useNavigate();
 
     async function callLogin(){
         try{
-            await login(user);
-            navigate('/')
+            await signIn(user.email, user.password);
+            navigate('/');
         }catch(error){
             if(error.code === 'auth/invalid-email'){
                 setMessage('Error: please enter a valid email.');
@@ -43,7 +44,7 @@ export default function Login(){
             </div>
             <div className="flex flex-col gap-y-[15px]">
                 <button onClick={()=>{callLogin()}} className="mx-auto px-[20px] bg-green-500 hover:bg-green-600 text-white px-[25px] py-[5px] w-fit">Login</button>
-                <a className="cursor-pointer hover:text-slate-400 text-slate-500"><button onClick={()=>{navigate('/signup')}}>Don't have an account? Click here to register.</button></a>
+                <p className="cursor-pointer hover:text-slate-400 text-slate-500"><button onClick={()=>{navigate('/signup')}}>Don't have an account? Click here to register.</button></p>
             </div>
             {error && <Toast message={message} />}
         </div>
